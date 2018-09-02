@@ -17,6 +17,8 @@ static CGFloat const kDefaulInset = 8.f;
 @property (nonatomic, copy) NSString* titleString;
 @property (nonatomic, copy) NSString* messageString;
 @property (strong, nonatomic) UIImage* iconImage;
+@property (strong, nonatomic) UIColor* startColor;
+@property (strong, nonatomic) UIColor* endColor;
 
 // Interaction
 
@@ -111,6 +113,15 @@ static NSMutableArray* currentAlertArray = nil;
             currentAlertArray = [NSMutableArray new];
         }
         
+        if (type == ISAlertTypeSuccess) {
+            _startColor = [UIColor colorWithRed:0.16 green:0.95 blue:0.61 alpha:1.00];
+            _endColor = [UIColor colorWithRed:0.04 green:0.71 blue:0.89 alpha:1.00];
+            
+        }else {
+            _startColor = [UIColor colorWithRed:1.00 green:0.83 blue:0.08 alpha:1.00];
+            _endColor = [UIColor colorWithRed:1.00 green:0.41 blue:0.22 alpha:1.00];
+        }
+        
         self.titleString = title;
         self.messageString = message;
         self.duration = duration;
@@ -166,11 +177,43 @@ static NSMutableArray* currentAlertArray = nil;
     [self hide:@(YES)];
 }
 
+-(UIView *)gradientViewWithFrame:(CGRect)frame colourA:(UIColor *)A colourB:(UIColor *)B rotation:(float)x {
+    
+    //x is between 0 and 1, eg. from a slider, representing 0 - 360 degrees
+    //colour A starts on top, with colour B below
+    //rotations move anti-clockwise
+    
+    //1. create the colour view
+    UIView * colourView = [UIView new];
+    colourView.frame = frame;
+    
+    //2. create the gradient layer
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = colourView.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)[A CGColor], (id)[B CGColor], nil];
+    [colourView.layer insertSublayer:gradient atIndex:0];
+    
+    //3. create coordinates
+    float a = pow(sinf((2*M_PI*((x+0.75)/2))),2);
+    float b = pow(sinf((2*M_PI*((x+0.0)/2))),2);
+    float c = pow(sinf((2*M_PI*((x+0.25)/2))),2);
+    float d = pow(sinf((2*M_PI*((x+0.5)/2))),2);
+    
+    //4. set the gradient direction
+    [gradient setStartPoint:CGPointMake(a, b)];
+    [gradient setEndPoint:CGPointMake(c, d)];
+    
+    return colourView;
+}
+
 - (void)constructAlertCardView {
     
     UIView* alertView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, self.view.frame.size.width, self.view.frame.size.height)];
     alertView.backgroundColor = _alertViewBackgroundColor;
     [self.view addSubview:alertView];
+    
+    UIView *gradientView = [self gradientViewWithFrame:alertView.frame colourA:_startColor colourB:_endColor rotation:0.25];
+    [alertView addSubview:gradientView];
     
     UIImageView* iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(kDefaulInset, (_alertViewHeight - _iconImageSize.height) / 2.f, _iconImageSize.width, _iconImageSize.height)];
     iconImage.contentMode = UIViewContentModeScaleAspectFit;
