@@ -215,7 +215,7 @@ static NSMutableArray* currentAlertArray = nil;
     UIView *gradientView = [self gradientViewWithFrame:alertView.frame colourA:_startColor colourB:_endColor rotation:0.25];
     [alertView addSubview:gradientView];
     
-    UIImageView* iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(kDefaulInset, (_alertViewHeight - _iconImageSize.height) / 2.f, _iconImageSize.width, _iconImageSize.height)];
+    UIImageView* iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(kDefaulInset, kDefaulInset, _iconImageSize.width, _iconImageSize.height)];
     iconImage.contentMode = UIViewContentModeScaleAspectFit;
     iconImage.image = _iconImage;
     [alertView addSubview:iconImage];
